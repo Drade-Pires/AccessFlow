@@ -4,10 +4,19 @@ import { prisma } from "../lib/prisma.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-
   const logs = await prisma.accessLog.findMany({
     include: {
-      user: true
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          active: true,
+          roleId: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }
     }
   });
 
@@ -15,7 +24,6 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-
   const { userId, type, status } = req.body;
 
   const log = await prisma.accessLog.create({
