@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAccessLogs } from "../services/api";
+import { Sidebar } from "../components/Sidebar";
 
 export function Logs() {
   const [logs, setLogs] = useState([]);
@@ -17,9 +18,12 @@ export function Logs() {
     loadLogs();
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#020617] p-8 text-white">
-      <h1 className="text-3xl font-bold">Logs de acesso</h1>
+return (
+  <div className="min-h-screen bg-[#020617] text-white">
+    <Sidebar />
+
+    <main className="min-h-screen p-6 lg:pl-80">
+      <h1 className="text-4xl font-bold">Logs de acesso</h1>
 
       <div className="mt-8 overflow-hidden rounded-2xl border border-slate-800">
         <table className="w-full text-left">
@@ -35,9 +39,13 @@ export function Logs() {
           <tbody>
             {logs.map((log) => (
               <tr key={log.id} className="border-t border-slate-800">
-                <td className="px-6 py-4">{log.user?.name}</td>
+                <td className="px-6 py-4">
+                  {log.user?.name}
+                </td>
 
-                <td className="px-6 py-4 text-slate-300">{log.type}</td>
+                <td className="px-6 py-4 text-slate-300">
+                  {log.type}
+                </td>
 
                 <td className="px-6 py-4">
                   <span
@@ -59,6 +67,7 @@ export function Logs() {
           </tbody>
         </table>
       </div>
-    </div>
-  );
+    </main>
+  </div>
+);
 }

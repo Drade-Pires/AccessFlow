@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAccessLogs } from "../services/api";
 import { getDashboardStats } from "../services/dashboard";
-import { Link } from "react-router-dom";
+import { Sidebar } from "../components/Sidebar";
 
 export function Dashboard() {
   const [logs, setLogs] = useState([]);
@@ -35,44 +35,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen w-full bg-[#020617] text-slate-100">
-      <aside className="fixed left-0 top-0 h-full w-72 border-r border-slate-800 bg-slate-950 px-6 py-8">
-        <h1 className="text-4xl font-bold tracking-tight">
-          Access<span className="text-blue-500">Flow</span>
-        </h1>
-
-        <p className="mt-3 text-sm text-slate-500">
-          Controle de acesso corporativo
-        </p>
-
-        <nav className="mt-12 space-y-3">
-          <Link
-            to="/dashboard"
-            className="block w-full rounded-xl bg-blue-600 px-4 py-3 text-left text-sm font-semibold text-white shadow-lg shadow-blue-600/20"
-          >
-            Dashboard
-          </Link>
-
-          <Link
-            to="/users"
-            className="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-white"
-          >
-            Usuários
-          </Link>
-
-          <Link
-            to="/logs"
-            className="block w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-white"
-          >
-            Logs
-          </Link>
-
-          <button
-            className="w-full rounded-xl px-4 py-3 text-left text-sm font-semibold text-slate-400 transition hover:bg-slate-900 hover:text-white"
-          >
-            Permissões
-          </button>
-        </nav>
-      </aside>
+      <Sidebar />
 
       <main className="ml-72 min-h-screen w-[calc(100%-18rem)] px-8 py-8">
         <header className="flex items-center justify-between border-b border-slate-800 pb-6">
