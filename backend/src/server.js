@@ -5,6 +5,7 @@ import userRoutes from "./routes/userRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import accessLogsRoutes from "./routes/accessLogs.routes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import roleRoutes from "./routes/roleRoutes.js";
 
 const app = express();
 
