@@ -11,8 +11,9 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(dashboardRoutes);
 
+app.use(dashboardRoutes);
+app.use(roleRoutes);
 app.use(userRoutes);
 app.use("/auth", authRoutes);
 app.use("/access-logs", accessLogsRoutes);
