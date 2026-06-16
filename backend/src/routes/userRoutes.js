@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
 
 import { authMiddleware } from "../middlewares/authMiddleware.js";
@@ -50,6 +51,49 @@ const getUserById = async (req, res) => {
   }
 
   return res.json(user);
+};
+
+const createUser = async (req, res) => {
+  const { name, email, password, roleId } = req.body;
+
+  if (!name || !email || !password || !roleId) {
+    return res.status(400).json({
+      message: "Nome, email, senha e perfil são obrigatórios"
+    });
+  }
+
+  const userAlreadyExists = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (userAlreadyExists) {
+    return res.status(400).json({
+      message: "Email já cadastrado"
+    });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await prisma.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      roleId
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      active: true,
+      roleId: true,
+      createdAt: true,
+      updatedAt: true,
+      role: true
+    }
+  });
+
+  return res.status(201).json(user);
 };
 
 const updateUser = async (req, res) => {
@@ -123,6 +167,13 @@ router.get(
   authMiddleware,
   roleMiddleware("ADMIN"),
   getUserById
+);
+
+router.post(
+  "/users",
+  authMiddleware,
+  roleMiddleware("ADMIN"),
+  createUser
 );
 
 router.put(

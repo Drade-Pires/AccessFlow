@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-import { getUsers, updateUser } from "../services/users";
+import { createUser, getUsers, updateUser } from "../services/users";
 
 export function Users() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const [newUser, setNewUser] = useState({
+    name: "",
+    email: "",
+    password: "",
+    roleId: ""
+  });
 
   useEffect(() => {
     async function loadUsers() {
@@ -22,8 +30,22 @@ export function Users() {
     setSelectedUser(user);
   }
 
-  function handleCloseModal() {
+  function handleCloseEditModal() {
     setSelectedUser(null);
+  }
+
+  function handleOpenCreateModal() {
+    setIsCreateModalOpen(true);
+  }
+
+  function handleCloseCreateModal() {
+    setIsCreateModalOpen(false);
+    setNewUser({
+      name: "",
+      email: "",
+      password: "",
+      roleId: ""
+    });
   }
 
   async function handleSaveUser() {
@@ -48,9 +70,43 @@ export function Users() {
     }
   }
 
+  async function handleCreateUser() {
+    try {
+      const createdUser = await createUser({
+        name: newUser.name,
+        email: newUser.email,
+        password: newUser.password,
+        roleId: newUser.roleId
+      });
+
+      setUsers((prevUsers) => [createdUser, ...prevUsers]);
+      handleCloseCreateModal();
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Erro ao criar usuário");
+    }
+  }
+
+  const roles = users.reduce((acc, user) => {
+    if (user.role && !acc.some((role) => role.id === user.role.id)) {
+      acc.push(user.role);
+    }
+
+    return acc;
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#020617] p-8 text-white">
-      <h1 className="text-3xl font-bold">Usuários</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Usuários</h1>
+
+        <button
+          onClick={handleOpenCreateModal}
+          className="rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold hover:bg-blue-700"
+        >
+          + Novo Usuário
+        </button>
+      </div>
 
       <div className="mt-8 overflow-hidden rounded-2xl border border-slate-800">
         <table className="w-full text-left">
@@ -157,7 +213,7 @@ export function Users() {
 
             <div className="mt-6 flex justify-end gap-3">
               <button
-                onClick={handleCloseModal}
+                onClick={handleCloseEditModal}
                 className="rounded-lg border border-slate-700 px-4 py-2 text-slate-300 hover:bg-slate-800"
               >
                 Cancelar
@@ -168,6 +224,99 @@ export function Users() {
                 className="rounded-lg bg-blue-600 px-4 py-2 font-medium hover:bg-blue-700"
               >
                 Salvar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/70">
+          <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-950 p-6">
+            <h2 className="text-2xl font-bold">Novo usuário</h2>
+
+            <div className="mt-6 space-y-4">
+              <div>
+                <label className="text-sm text-slate-400">Nome</label>
+                <input
+                  type="text"
+                  value={newUser.name}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      name: e.target.value
+                    })
+                  }
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-slate-400">Email</label>
+                <input
+                  type="email"
+                  value={newUser.email}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      email: e.target.value
+                    })
+                  }
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-slate-400">Senha</label>
+                <input
+                  type="password"
+                  value={newUser.password}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      password: e.target.value
+                    })
+                  }
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-slate-400">Perfil</label>
+                <select
+                  value={newUser.roleId}
+                  onChange={(e) =>
+                    setNewUser({
+                      ...newUser,
+                      roleId: e.target.value
+                    })
+                  }
+                  className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-3 text-white outline-none"
+                >
+                  <option value="">Selecione um perfil</option>
+
+                  {roles.map((role) => (
+                    <option key={role.id} value={role.id}>
+                      {role.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={handleCloseCreateModal}
+                className="rounded-lg border border-slate-700 px-4 py-2 text-slate-300 hover:bg-slate-800"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleCreateUser}
+                className="rounded-lg bg-blue-600 px-4 py-2 font-medium hover:bg-blue-700"
+              >
+                Criar usuário
               </button>
             </div>
           </div>
