@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import { createUser, deleteUser, getUsers, updateUser } from "../services/users";
+import { getRoles } from "../services/roles";
 
 export function Users() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [roles, setRoles] = useState([]);
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -15,13 +17,20 @@ export function Users() {
   });
 
   useEffect(() => {
-    async function loadUsers() {
-      const data = await getUsers();
-      setUsers(data);
-    }
+  async function loadData() {
+    try {
+      const usersData = await getUsers();
+      const rolesData = await getRoles();
 
-    loadUsers();
-  }, []);
+      setUsers(usersData);
+      setRoles(rolesData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  loadData();
+}, []);
 
   function handleEdit(user) {
     setSelectedUser(user);
@@ -82,14 +91,6 @@ export function Users() {
       prevUsers.filter((user) => user.id !== userId)
     );
   }
-
-  const roles = users.reduce((acc, user) => {
-    if (user.role && !acc.some((role) => role.id === user.role.id)) {
-      acc.push(user.role);
-    }
-
-    return acc;
-  }, []);
 
   return (
     <div className="min-h-screen w-screen overflow-x-hidden bg-[#020617] text-white">
